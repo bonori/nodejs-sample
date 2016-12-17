@@ -1,0 +1,49 @@
+<html>
+<head>
+	<title>간단 채팅</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+	<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<style>
+		.col-xs-3, .col-xs-9 {padding:0px;}
+		#contents {height:100%; padding-bottom:34px;}
+		#list {float:left; width:80%; margin:0; height:100%; overflow-y:auto;}
+		#list li>strong {padding-right:5px;}
+		#users {float:right; width:20%; margin:0; height:100%; overflow-y:auto; background-color:#e5e5e5;}
+		#messageForm {margin:0; position:fixed; bottom:0; width:100%;}
+		#message, #send {width:100%;}
+	</style>
+</head>
+<body>
+	<!-- 로그인 영역 -->
+	<div id="loginArea">
+		<form id="loginForm" class="form-inline">
+			<div class="form-group">
+				<label>Username</label>
+				<input type="text" id="userName" class="form-control" />
+				<button type="submit" class="btn btn-primary">입장</button>
+			</div>
+		</form>
+	</div>
+
+	<!-- 채팅 영역 -->
+	<div id="chatArea" style="display:none">
+		<div id="contents">
+			<!-- 대화 목록 -->
+			<ul id="list" class="list-unstyled"></ul>
+
+			<!-- 접속자 목록 -->
+			<ul id="users" class="list-unstyled"></ul>
+		</div>
+
+		<!-- 입력 폼 -->
+		<form id="messageForm" class="container-fluid">
+			<div class="row">
+				<div class="col-xs-9"><input type="text" id="message" class="form-control" autocomplete="off"></div>
+				<div class="col-xs-3"><button type="submit" id="send" class="btn btn-primary">전송</button></div>		    
+		    </div>
+		</form>
+	</div>
+
+</body>
+</html>

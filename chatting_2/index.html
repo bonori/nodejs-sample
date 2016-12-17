@@ -1,0 +1,98 @@
+<html>
+<head>
+	<title>간단 채팅</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+	<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<style>
+		.col-xs-3, .col-xs-9 {padding:0px;}
+		#contents {height:100%; padding-bottom:34px;}
+		#list {float:left; width:80%; margin:0; height:100%; overflow-y:auto;}
+		#list li>strong {padding-right:5px;}
+		#users {float:right; width:20%; margin:0; height:100%; overflow-y:auto; background-color:#e5e5e5;}
+		#messageForm {margin:0; position:fixed; bottom:0; width:100%;}
+		#message, #send {width:100%;}
+	</style>
+</head>
+<body>
+	<!-- 로그인 영역 -->
+	<div id="loginArea">
+		<form id="loginForm" class="form-inline">
+			<div class="form-group">
+				<label>Username</label>
+				<input type="text" id="userName" class="form-control" />
+				<button type="submit" class="btn btn-primary">입장</button>
+			</div>
+		</form>
+	</div>
+
+	<!-- 채팅 영역 -->
+	<div id="chatArea" style="display:none">
+		<div id="contents">
+			<!-- 대화 목록 -->
+			<ul id="list" class="list-unstyled"></ul>
+
+			<!-- 접속자 목록 -->
+			<ul id="users" class="list-unstyled"></ul>
+		</div>
+
+		<!-- 입력 폼 -->
+		<form id="messageForm" class="container-fluid">
+			<div class="row">
+				<div class="col-xs-9"><input type="text" id="message" class="form-control" autocomplete="off"></div>
+				<div class="col-xs-3"><button type="submit" id="send" class="btn btn-primary">전송</button></div>		    
+		    </div>
+		</form>
+	</div>
+
+	<script>
+	var socket = io();
+	var $loginArea = $('#loginArea');
+	var $loginForm = $('#loginForm');
+	var $userName = $('#userName');
+	var $chatArea = $('#chatArea');
+	var $messageForm = $('#messageForm');
+	var $message = $('#message');
+	var $list = $('#list');
+	var $users = $('#users');
+
+	// 로그인 폼 전송
+	$loginForm.on('submit', function(e){
+		socket.emit('new user', $userName.val(), function(success){
+			if(success){
+				$loginArea.hide();
+				$chatArea.show();
+				$message.focus();
+			}else{
+				alert('입장 실패');
+				$userName.val('').focus();
+			}
+		});
+		
+		e.preventDefault();
+	});
+
+	// 메시지 입력폼 전송
+	$messageForm.on('submit', function(e){
+		socket.emit('send message', $message.val());
+		$message.val('').focus();
+		e.preventDefault();
+	});
+
+	// 새 메시지 수신 이벤트
+	socket.on('new message', function(data){
+		$list.append("<li><strong>" + data.from + "</strong>" + data.msg + "</li>");
+		$message.focus();
+		$list.scrollTop($list[0].scrollHeight);
+	});
+
+	// 접속자 목록 갱신 이벤트
+	socket.on('refresh users', function(userNames){
+		$users.empty();
+		for(var i=0;i<userNames.length;i++){
+			$users.append("<li>"+userNames[i]+"</li>");
+		}
+	});
+	</script>
+</body>
+</html>
